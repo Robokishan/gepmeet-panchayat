@@ -17,13 +17,13 @@ export default {
         'dtls',
         'rtp',
         'srtp',
-        'rtcp',
-        'rtx',
-        'bwe',
-        'score',
-        'simulcast',
-        'svc',
-        'sctp'
+        'rtcp'
+        // 'rtx',
+        // 'bwe',
+        // 'score',
+        // 'simulcast',
+        // 'svc',
+        // 'sctp'
       ] as WorkerLogTag[],
       rtcMinPort: Number(process.env.WEBRTC_MIN_PORT),
       rtcMaxPort: Number(process.env.WEBRTC_MAX_PORT)
@@ -50,13 +50,13 @@ export default {
     webRtcTransportOptions: {
       listenIps: [
         {
-          ip: process.env.WEBRTC_LISTEN_IP || '1.2.3.4',
+          ip: process.env.WEBRTC_LISTEN_IP || '0.0.0.0',
           announcedIp: process.env.WEBRTC_A_IP
         }
       ] as TransportListenIp[],
       initialAvailableOutgoingBitrate: 1000000,
-      minimumAvailableOutgoingBitrate: 600000,
-      maxSctpMessageSize: 262144,
+      // minimumAvailableOutgoingBitrate: 600000,
+      // maxSctpMessageSize: 262144,
       maxIncomingBitrate: 1500000
     }
   }

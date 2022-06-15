@@ -9,8 +9,8 @@ interface ReturnType {
 }
 
 const logger = new Logger();
-export let worker = null;
-export let router = null;
+export let worker: Worker = null;
+export let router: Router = null;
 export async function startMediasoup(): Promise<ReturnType> {
   worker = await mediasoup.createWorker({
     logLevel: mediasoupConfig.mediasoup.workerSettings.logLevel,

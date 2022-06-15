@@ -41,26 +41,26 @@ export const createConsumer = async (
   peerConsuming.consumers.push(consumer);
 
   return {
-    peerId: producer.appData.peerId,
-    consumerParameters: {
-      producerId: producer.id,
-      id: consumer.id,
-      kind: consumer.kind,
-      rtpParameters: consumer.rtpParameters,
-      type: consumer.type,
-      producerPaused: consumer.producerPaused
-    }
+    // peerId: producer.appData.peerId,
+    // consumerParameters: {
+    producerId: producer.id,
+    id: consumer.id,
+    kind: consumer.kind,
+    rtpParameters: consumer.rtpParameters,
+    type: consumer.type,
+    producerPaused: consumer.producerPaused
+    // }
   };
 };
 
 export interface Consumer {
-  peerId: string;
-  consumerParameters: {
-    producerId: string;
-    id: string;
-    kind: string;
-    rtpParameters: RtpParameters;
-    type: ConsumerType;
-    producerPaused: boolean;
-  };
+  // peerId: string;
+  // consumerParameters: {
+  producerId: string;
+  id: string;
+  kind: string;
+  rtpParameters: RtpParameters;
+  type: ConsumerType;
+  producerPaused: boolean;
+  // };
 }
