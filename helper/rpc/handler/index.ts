@@ -1,3 +1,13 @@
+import {
+  connectConsumerTransportHandler,
+  connectProducerTransportHandler,
+  createConsumerTransportHandler,
+  createProducerTransportHandler,
+  getRouterRtpCapabilities,
+  mediaConsumehandler,
+  mediaResumehandler,
+  onProduceCommand
+} from '../../mediasoup/helpers';
 import AMQPRPCServer from '../amqp-rpc/AMQPRPCServer';
 
 export interface HelperType {
@@ -19,9 +29,35 @@ export enum MediaSoupCommand {
 export const serverhelpers = (): HelperType[] => [
   {
     eventName: MediaSoupCommand.getRouterRtpCapabilities,
-    handler: () => ({
-      message: 'hi'
-    })
+    handler: getRouterRtpCapabilities
+  },
+  {
+    eventName: MediaSoupCommand.createProducerTransport,
+    handler: createProducerTransportHandler
+  },
+  {
+    eventName: MediaSoupCommand.createConsumerTransport,
+    handler: createConsumerTransportHandler
+  },
+  {
+    eventName: MediaSoupCommand.connectProducerTransport,
+    handler: connectProducerTransportHandler
+  },
+  {
+    eventName: MediaSoupCommand.connectConsumerTransport,
+    handler: connectConsumerTransportHandler
+  },
+  {
+    eventName: MediaSoupCommand.produce,
+    handler: onProduceCommand
+  },
+  {
+    eventName: MediaSoupCommand.consume,
+    handler: mediaConsumehandler
+  },
+  {
+    eventName: MediaSoupCommand.resume,
+    handler: mediaResumehandler
   }
 ];
 

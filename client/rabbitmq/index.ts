@@ -6,6 +6,7 @@ import {
   RtpParameters
 } from 'mediasoup/node/lib/types';
 import { startRPCServer } from '../../helper/rpc';
+import { panchayatHandshakqQueue } from '../../utils/constants';
 import Logger from '../../utils/logger';
 import { Consumer } from '../mediasoup/createConsumer';
 import { TransportOptions } from '../mediasoup/createTransport';
@@ -137,14 +138,14 @@ export let send = <Key extends keyof OutgoingMessageDataMap>(
   // eslint-disable-next-line @typescript-eslint/no-empty-function
 ) => {};
 
-export const startRabbit = async (handler: HandlerMap) => {
+export const startRabbit = async () => {
   let conn: Connection;
   try {
     conn = await amqp.connect(process.env.RABITMQ_URL);
-    await startRPCServer(conn, `panchayat:handshake:${process.env.WORKER_ID}`);
+    await startRPCServer(conn, panchayatHandshakqQueue);
   } catch (err) {
     log.error('Unable to connect to RabbitMQ: ', err);
-    setTimeout(async () => await startRabbit(handler), retryInterval);
+    setTimeout(async () => await startRabbit(), retryInterval);
     return;
   }
 };
