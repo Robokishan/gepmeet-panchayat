@@ -19,7 +19,7 @@ export const createTransport = async (
   router: Router,
   peerId: string
 ) => {
-  logger.info('create-transport', direction);
+  logger.info('create-transport', direction, peerId);
   const { listenIps, initialAvailableOutgoingBitrate } =
     mediasoupConfig.mediasoup.webRtcTransportOptions;
 
