@@ -40,12 +40,16 @@ export const createProducerTransportHandler = async (
   const { roomId, userId } = sessionData;
   if (!rooms[roomId]) {
     rooms[roomId] = createRoom();
+  }
+
+  if (!rooms[roomId]?.state[userId]) {
     rooms[roomId].state = {
+      ...rooms[roomId].state,
       [userId]: {
         recvTransport: null,
         sendTransport: null,
         consumers: [],
-        producer: null
+        producers: []
       }
     };
   }
@@ -88,12 +92,16 @@ export const createConsumerTransportHandler = async (
   const { roomId, userId } = sessionData;
   if (!rooms[roomId]) {
     rooms[roomId] = createRoom();
+  }
+
+  if (!rooms[roomId]?.state[userId]) {
     rooms[roomId].state = {
+      ...rooms[roomId].state,
       [userId]: {
         recvTransport: null,
         sendTransport: null,
         consumers: [],
-        producer: null
+        producers: []
       }
     };
   }
@@ -118,8 +126,7 @@ export const onProduceCommand = async (produceArg: ProduceArg) => {
     produceMeta
   );
 
-  rooms[roomId].state[userId].producer = producer;
-
+  rooms[roomId].state[userId].producers.push(producer);
   // TODO: IDEALLY SHOULD EMIT THAT NEW PRODUCER HAS BEEN ADDED
   return { id: producer.id };
 };
@@ -136,31 +143,38 @@ export const mediaConsumehandler = async (mediaCosumeArg: MediaConsumeArg) => {
   const state = rooms[roomId].state;
   const { recvTransport } = state[userId];
 
+  const consumers = [];
   const consumersParameters: Consumer[] = [];
   for (const theirPeerId of Object.keys(state)) {
     const peerState = state[theirPeerId];
-    if (theirPeerId == userId || !peerState || !peerState.producer) {
+
+    if (
+      theirPeerId == userId ||
+      !peerState ||
+      !(peerState.producers?.length > 0)
+    ) {
       continue;
     }
 
-    const { producer } = peerState;
-    try {
-      consumersParameters.push(
-        await createConsumer(
-          router,
-          producer,
-          rtpCapabilities,
-          recvTransport,
-          userId,
-          rooms[roomId].state[userId]
-        )
-      );
-      return { consumerParameters: consumersParameters };
-    } catch (error) {
-      log.error(error);
-      return [];
+    for (const producer of peerState.producers) {
+      try {
+        consumersParameters.push(
+          await createConsumer(
+            router,
+            producer,
+            rtpCapabilities,
+            recvTransport,
+            userId,
+            rooms[roomId].state[userId]
+          )
+        );
+      } catch (error) {
+        log.error(error);
+      }
     }
+    consumers.push(consumersParameters);
   }
+  return { consumerParameters: consumers };
 };
 
 export const mediaResumehandler = async (mediaResumeArg: MediaResumeArg) => {};

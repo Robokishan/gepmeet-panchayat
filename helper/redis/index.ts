@@ -34,6 +34,5 @@ export const unregistermeFromRoom = async () => {
 };
 
 export const upsertMyMetadata = async (metadata: MetaDataType) => {
-  log.info('writing ', metadata);
   return await redis.hmset(HASH_WORKER_KEY, metadata);
 };
