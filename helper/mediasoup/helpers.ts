@@ -32,6 +32,8 @@ interface MediaConsumeArg extends SessionData {
 }
 interface MediaResumeArg extends SessionData {}
 
+interface MediaCleanupArg extends SessionData {}
+
 const log = new Logger();
 
 export const createProducerTransportHandler = async (
@@ -175,6 +177,26 @@ export const mediaConsumehandler = async (mediaCosumeArg: MediaConsumeArg) => {
     consumers.push(consumersParameters);
   }
   return { consumerParameters: consumers };
+};
+
+export const mediaCleanupHandler = (mediaCleanupArg: MediaCleanupArg) => {
+  const {
+    sessionData: { roomId, userId }
+  } = mediaCleanupArg;
+
+  if (rooms[roomId]?.state[userId]) {
+    const peer = rooms[roomId].state[userId];
+
+    for (const producer of peer.producers) {
+      producer.close();
+    }
+    for (const consumer of peer.consumers) {
+      consumer.close();
+    }
+    peer.sendTransport.close();
+    peer.sendTransport.close;
+    delete rooms[roomId].state[userId];
+  }
 };
 
 export const mediaResumehandler = async (mediaResumeArg: MediaResumeArg) => {};
