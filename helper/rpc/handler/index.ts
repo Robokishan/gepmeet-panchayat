@@ -4,6 +4,7 @@ import {
   createConsumerTransportHandler,
   createProducerTransportHandler,
   getRouterRtpCapabilities,
+  mediaCleanupHandler,
   mediaConsumehandler,
   mediaResumehandler,
   onProduceCommand
@@ -16,6 +17,7 @@ export interface HelperType {
 }
 
 export enum MediaSoupCommand {
+  disconnect = "disconnect",
   getRouterRtpCapabilities = 'getRouterRtpCapabilities',
   createProducerTransport = 'createProducerTransport',
   connectProducerTransport = 'connectProducerTransport',
@@ -58,6 +60,10 @@ export const serverhelpers = (): HelperType[] => [
   {
     eventName: MediaSoupCommand.resume,
     handler: mediaResumehandler
+  },
+  {
+    eventName: MediaSoupCommand.disconnect,
+    handler: mediaCleanupHandler
   }
 ];
 

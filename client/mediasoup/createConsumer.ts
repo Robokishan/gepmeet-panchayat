@@ -7,7 +7,9 @@ import {
   Transport
 } from 'mediasoup/node/lib/types';
 import { MyPeer } from '../../helper/MyPeer';
+import Logger from '../../utils/logger';
 
+const log = new Logger();
 export const createConsumer = async (
   router: Router,
   producer: Producer,
@@ -29,14 +31,13 @@ export const createConsumer = async (
     appData: { peerId, mediaPeerId: producer.appData.peerId }
   });
 
-  // consumer.on('transportclose', () => {
-  //   log.info(`consumer's transport closed`, consumer.id);
-  //   closeConsumer(consumer, peerConsuming);
-  // });
-  // consumer.on('producerclose', () => {
-  //   log.info(`consumer's producer closed`, consumer.id);
-  //   closeConsumer(consumer, peerConsuming);
-  // });
+  consumer.on('transportclose', () => {
+    log.info(`consumer's transport closed`, consumer.id);
+    // closeConsumer(consumer, peerConsuming);
+  });
+  consumer.on('producerclose', () => {
+    log.info(`consumer's producer closed`, consumer.id);
+  });
 
   peerConsuming.consumers.push(consumer);
 
