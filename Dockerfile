@@ -1,12 +1,27 @@
-FROM node:16
+# build environment
+FROM node:14-bullseye as deps
+RUN apt-get update \
+    && apt-get install -y net-tools build-essential python3 python3-pip valgrind
 WORKDIR /usr/src/app
-COPY package.json ./
 COPY yarn.lock ./
+COPY package.json ./
 RUN yarn
+
+
+FROM node:14-bullseye as builder
+WORKDIR /usr/src/app
 COPY . .
+COPY --from=deps /usr/src/app/node_modules ./node_modules
 RUN yarn build
+
+FROM node:14-bullseye as runner
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/next-i18next.config.js ./
+COPY --from=builder /usr/src/app/next.config.js ./
+COPY --from=builder /usr/src/app/public ./public
+COPY --from=builder /usr/src/app/.next ./.next
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 ENV NODE_ENV production
-ENV PORT 8080
-EXPOSE 8080
 CMD [ "node", "build/index.js" ]
 USER node
