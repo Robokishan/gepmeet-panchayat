@@ -7,7 +7,7 @@ import { registerRPCServerHandlers } from './handler';
 const log = new Logger();
 
 // NOTE: export rpcserver and rpcclient if required using outside block variable
-export const startRPCServer = async (
+const startRPCServer = async (
   rabbitMQConnection: Connection,
   queue: string
 ): Promise<void> => {
@@ -19,13 +19,16 @@ export const startRPCServer = async (
   log.info('RPC server loaded');
 };
 
-export const startRPCClient = async (
+let rpcClient: AMQPRPCClient = null;
+
+const startRPCClient = async (
   rabbitMQConnection: Connection,
   queue: string
-): Promise<AMQPRPCClient> => {
-  const rpcClient = new AMQPRPCClient(rabbitMQConnection, {
+) => {
+  rpcClient = new AMQPRPCClient(rabbitMQConnection, {
     requestsQueue: queue
   });
   await rpcClient.start();
-  return rpcClient;
 };
+
+export { startRPCClient, startRPCServer, rpcClient };

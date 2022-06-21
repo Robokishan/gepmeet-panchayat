@@ -10,8 +10,12 @@ import {
   createTransport,
   transportToOptions
 } from '../../client/mediasoup/createTransport';
+import { rabbitMQChannel } from '../../client/rabbitmq';
+import { ROOM_EXCHANGE } from '../../utils/constants';
 import Logger from '../../utils/logger';
+import { getRoomKey } from '../../utils/room';
 import { rooms } from '../MyRoomState';
+import { MediaSoupCommand } from '../rpc/handler';
 import { createRoom } from './createRoom';
 import { SessionDataType } from './types';
 
@@ -30,6 +34,12 @@ interface ProduceArg extends SessionData {
 interface MediaConsumeArg extends SessionData {
   rtpCapabilities: RtpCapabilities;
 }
+
+interface MediaUserConsumeArg extends MediaConsumeArg {
+  userId: string;
+  producerIds: string[];
+}
+
 interface MediaResumeArg extends SessionData {}
 
 interface MediaCleanupArg extends SessionData {}
@@ -130,12 +140,62 @@ export const onProduceCommand = async (produceArg: ProduceArg) => {
 
   rooms[roomId].state[userId].producers.push(producer);
   // TODO: IDEALLY SHOULD EMIT THAT NEW PRODUCER HAS BEEN ADDED
+  sendMessageToQueue(roomId, {
+    msg: 'new User Joined',
+    userId: userId,
+    roomId: roomId,
+    producer: producer.kind
+  });
   return { id: producer.id };
 };
 
 export const getRouterRtpCapabilities = () => ({
   rtpCapabilities: router.rtpCapabilities
 });
+
+export const mediaUserConsumeHandler = async (
+  mediaUserConsumeArg: MediaUserConsumeArg
+) => {
+  const {
+    sessionData: { userId: myId, roomId },
+    rtpCapabilities,
+    userId: theirId,
+    producerIds
+  } = mediaUserConsumeArg;
+  if (!rooms[roomId]?.state[theirId]) return { msg: 'peerid not exist' };
+  if (!rooms[roomId]?.state[myId]) return { msg: 'i am not exist' };
+  if (!(producerIds?.length > 0)) return { msg: 'please provide producer id' };
+
+  const consumers = {};
+  const consumersParameters: Consumer[] = [];
+
+  const peerState = rooms[roomId].state[theirId];
+  const myState = rooms[roomId].state[myId];
+
+  const { recvTransport } = myState;
+
+  for (const producer of peerState.producers) {
+    if (producerIds.includes(producer.id)) {
+      try {
+        consumersParameters.push(
+          await createConsumer(
+            router,
+            producer,
+            rtpCapabilities,
+            recvTransport,
+            theirId,
+            rooms[roomId].state[myId],
+            roomId
+          )
+        );
+      } catch (error) {
+        log.error(error);
+      }
+    }
+    consumers[theirId] = consumersParameters;
+  }
+  return { consumerParameters: consumers };
+};
 
 export const mediaConsumehandler = async (mediaCosumeArg: MediaConsumeArg) => {
   const {
@@ -145,7 +205,7 @@ export const mediaConsumehandler = async (mediaCosumeArg: MediaConsumeArg) => {
   const state = rooms[roomId].state;
   const { recvTransport } = state[userId];
 
-  const consumers = [];
+  const consumers = {};
   const consumersParameters: Consumer[] = [];
   for (const theirPeerId of Object.keys(state)) {
     const peerState = state[theirPeerId];
@@ -167,14 +227,15 @@ export const mediaConsumehandler = async (mediaCosumeArg: MediaConsumeArg) => {
             rtpCapabilities,
             recvTransport,
             userId,
-            rooms[roomId].state[userId]
+            rooms[roomId].state[userId],
+            roomId
           )
         );
       } catch (error) {
         log.error(error);
       }
     }
-    consumers.push(consumersParameters);
+    consumers[theirPeerId] = consumersParameters;
   }
   return { consumerParameters: consumers };
 };
@@ -197,6 +258,14 @@ export const mediaCleanupHandler = (mediaCleanupArg: MediaCleanupArg) => {
     peer.sendTransport.close;
     delete rooms[roomId].state[userId];
   }
+};
+
+export const sendMessageToQueue = (roomId: string, msg: any) => {
+  rabbitMQChannel.publish(
+    ROOM_EXCHANGE,
+    getRoomKey(roomId),
+    Buffer.from(JSON.stringify(msg))
+  );
 };
 
 export const mediaResumehandler = async (mediaResumeArg: MediaResumeArg) => {};

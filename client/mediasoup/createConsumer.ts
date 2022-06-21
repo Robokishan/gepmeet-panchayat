@@ -6,8 +6,15 @@ import {
   RtpParameters,
   Transport
 } from 'mediasoup/node/lib/types';
+import { closePeer } from '../../helper/mediasoup';
 import { MyPeer } from '../../helper/MyPeer';
+import { rooms } from '../../helper/MyRoomState';
+import { rpcClient } from '../../helper/rpc';
+import { MediaSoupCommand } from '../../helper/rpc/handler';
+import { ROOM_EXCHANGE } from '../../utils/constants';
 import Logger from '../../utils/logger';
+import { getRoomKey } from '../../utils/room';
+import { rabbitMQChannel } from '../rabbitmq';
 
 const log = new Logger();
 export const createConsumer = async (
@@ -16,7 +23,8 @@ export const createConsumer = async (
   rtpCapabilities: RtpCapabilities,
   transport: Transport,
   peerId: string,
-  peerConsuming: MyPeer
+  peerConsuming: MyPeer,
+  roomId: string
 ): Promise<Consumer> => {
   if (!router.canConsume({ producerId: producer.id, rtpCapabilities })) {
     throw new Error(
@@ -33,35 +41,53 @@ export const createConsumer = async (
 
   consumer.on('transportclose', () => {
     log.info(`consumer's transport closed`, consumer.id);
+    closeConsumer(peerId, roomId);
     // closeConsumer(consumer, peerConsuming);
   });
   consumer.on('producerclose', () => {
-    log.info(`consumer's producer closed`, consumer.id);
+    closeConsumer(peerId, roomId);
   });
 
   peerConsuming.consumers.push(consumer);
 
   return {
-    // peerId: producer.appData.peerId,
-    // consumerParameters: {
     producerId: producer.id,
     id: consumer.id,
     kind: consumer.kind,
     rtpParameters: consumer.rtpParameters,
     type: consumer.type,
     producerPaused: consumer.producerPaused
-    // }
   };
 };
 
+const closeConsumer = (peerId, roomId) => {
+  if (rooms[roomId]?.state[peerId]) {
+    const peer = rooms[roomId].state[peerId];
+    closePeer(peer);
+    rpcClient.sendCommand(MediaSoupCommand.closePeer, [
+      { roomId: roomId, userId: peerId }
+    ]);
+    rabbitMQChannel.publish(
+      ROOM_EXCHANGE,
+      getRoomKey(roomId),
+      Buffer.from(
+        JSON.stringify({
+          msg: MediaSoupCommand.closePeer,
+          sessionData: {
+            roomId,
+            peerId
+          }
+        })
+      )
+    );
+  }
+};
+
 export interface Consumer {
-  // peerId: string;
-  // consumerParameters: {
   producerId: string;
   id: string;
   kind: string;
   rtpParameters: RtpParameters;
   type: ConsumerType;
   producerPaused: boolean;
-  // };
 }
