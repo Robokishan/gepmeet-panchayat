@@ -40,7 +40,6 @@
     "ioredis": "^5.0.4",
     "jsonwebtoken": "^8.5.1",
     "mediasoup": "^3.9.13",
-    "rascal": "^14.4.1",
-    "uui": "^8.3.2"
+    "rascal": "^14.4.1"
   }
 }
