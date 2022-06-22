@@ -39,14 +39,14 @@ export const createConsumer = async (
     appData: { peerId, mediaPeerId: producer.appData.peerId }
   });
 
-  consumer.on('transportclose', () => {
-    log.info(`consumer's transport closed`, consumer.id);
-    closeConsumer(peerId, roomId);
-    // closeConsumer(consumer, peerConsuming);
-  });
-  consumer.on('producerclose', () => {
-    closeConsumer(peerId, roomId);
-  });
+  // consumer.on('transportclose', () => {
+  //   log.info(`consumer's transport closed`, consumer.id);
+  //   closeConsumer(peerId, roomId);
+  //   // closeConsumer(consumer, peerConsuming);
+  // });
+  // consumer.on('producerclose', () => {
+  //   closeConsumer(peerId, roomId);
+  // });
 
   peerConsuming.consumers.push(consumer);
 
