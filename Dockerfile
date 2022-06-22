@@ -17,11 +17,12 @@ RUN yarn build
 FROM node:14-bullseye as runner
 WORKDIR /usr/src/app
 
-COPY --from=builder /usr/src/app/next-i18next.config.js ./
-COPY --from=builder /usr/src/app/next.config.js ./
-COPY --from=builder /usr/src/app/public ./public
-COPY --from=builder /usr/src/app/.next ./.next
+# COPY --from=builder /usr/src/app/next-i18next.config.js ./
+# COPY --from=builder /usr/src/app/next.config.js ./
+# COPY --from=builder /usr/src/app/public ./public
+# COPY --from=builder /usr/src/app/.next ./.next
 COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/build ./build
 ENV NODE_ENV production
 CMD [ "node", "build/index.js" ]
 USER node
