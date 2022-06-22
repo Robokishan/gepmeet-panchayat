@@ -258,6 +258,7 @@ export const mediaCleanupHandler = (mediaCleanupArg: MediaCleanupArg) => {
     peer.sendTransport.close;
     delete rooms[roomId].state[userId];
   }
+  return;
 };
 
 export const sendMessageToQueue = (roomId: string, msg: any) => {
