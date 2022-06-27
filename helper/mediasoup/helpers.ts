@@ -15,7 +15,6 @@ import { ROOM_EXCHANGE } from '../../utils/constants';
 import Logger from '../../utils/logger';
 import { getRoomKey } from '../../utils/room';
 import { rooms } from '../MyRoomState';
-import { MediaSoupCommand } from '../rpc/handler';
 import { createRoom } from './createRoom';
 import { SessionDataType } from './types';
 
@@ -139,6 +138,7 @@ export const onProduceCommand = async (produceArg: ProduceArg) => {
   );
 
   rooms[roomId].state[userId].producers.push(producer);
+
   // TODO: IDEALLY SHOULD EMIT THAT NEW PRODUCER HAS BEEN ADDED
   sendMessageToQueue(roomId, {
     msg: 'new User Joined',
@@ -146,6 +146,7 @@ export const onProduceCommand = async (produceArg: ProduceArg) => {
     roomId: roomId,
     producer: producer.kind
   });
+
   return { id: producer.id };
 };
 
