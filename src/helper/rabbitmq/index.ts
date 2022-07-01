@@ -9,7 +9,7 @@ export const sendMessageToMonitorQueue = (msg: unknown) => {
     serverConfig.WORKER_ID,
     Buffer.from(JSON.stringify(msg)),
     {
-      expiration: 1000
+      expiration: serverConfig.MONITOR_POLL_INTERVAL
     }
   );
 };
