@@ -5,7 +5,16 @@ const redisConfig: RedisOptions = {
   host: serverConfig.REDIS_HOST,
   port: Number(serverConfig.REDIS_PORT),
   username: serverConfig.REDIS_USERNAME,
-  password: serverConfig.REDIS_PASSWORD
+  password: serverConfig.REDIS_PASSWORD,
+  maxRetriesPerRequest: null
 };
 
-export default new Redis(redisConfig);
+const redis = new Redis(redisConfig);
+
+// flush redis hack
+// redis.keys('*').then((keys) => {
+//   console.log(keys);
+//   keys.map((key) => redis.del(key));
+// });
+
+export default redis;
