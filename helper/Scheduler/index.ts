@@ -32,26 +32,31 @@ const schedulerWorker = new Worker(
     if (job.name == 'mediasoup') {
       let totalProducers = 0;
       let totalConsumers = 0;
+      let totalState = 0;
       if (Object.keys(rooms).length > 0) {
         Object.keys(rooms).forEach((room) => {
           Object.entries(rooms[room].state).forEach(([, value]) => {
             totalProducers += value.producers?.length ?? 0;
             totalConsumers += value.producers?.length ?? 0;
           });
+
+          totalState += Object.keys(rooms[room].state).length;
         });
       }
-      log.info(
-        'Total : ',
-        Object.keys(rooms).length,
-        'Producers : ',
-        totalProducers,
-        'Consumers : ',
-        totalConsumers
-      );
+
+      // log.debug(
+      //   'Total : ',
+      //   Object.keys(rooms).length,
+      //   'Producers : ',
+      //   totalProducers,
+      //   'Consumers : ',
+      //   totalConsumers
+      // );
 
       sendMessageToMonitorQueue({
         totalConsumers,
         totalProducers,
+        totalState,
         rooms: Object.keys(rooms).length
       });
     }
