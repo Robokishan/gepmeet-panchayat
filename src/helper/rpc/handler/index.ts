@@ -6,7 +6,6 @@ import {
   getRouterRtpCapabilities,
   mediaCleanupHandler,
   mediaConsumehandler,
-  mediaResumehandler,
   mediaUserConsumeHandler,
   onProduceCommand
 } from '../../mediasoup/helpers';
@@ -14,7 +13,7 @@ import AMQPRPCServer from '../amqp-rpc/AMQPRPCServer';
 
 export interface HelperType {
   eventName: string;
-  handler: any;
+  handler: unknown;
 }
 
 export enum MediaSoupCommand {
@@ -64,10 +63,6 @@ export const serverhelpers = (): HelperType[] => [
   {
     eventName: MediaSoupCommand.consumeUser,
     handler: mediaUserConsumeHandler
-  },
-  {
-    eventName: MediaSoupCommand.resume,
-    handler: mediaResumehandler
   },
   {
     eventName: MediaSoupCommand.disconnect,
