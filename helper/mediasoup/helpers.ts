@@ -10,11 +10,9 @@ import {
   createTransport,
   transportToOptions
 } from '../../client/mediasoup/createTransport';
-import { rabbitMQChannel } from '../../client/rabbitmq';
-import { ROOM_EXCHANGE } from '../../utils/constants';
 import Logger from '../../utils/logger';
-import { getRoomKey } from '../../utils/room';
 import { rooms } from '../MyRoomState';
+import { sendMessageToRoomQueue } from '../rabbitmq';
 import { createRoom } from './createRoom';
 import { SessionDataType } from './types';
 
@@ -39,9 +37,9 @@ interface MediaUserConsumeArg extends MediaConsumeArg {
   producerIds: string[];
 }
 
-type MediaResumeArg = SessionData
+// type MediaResumeArg = SessionData;
 
-type MediaCleanupArg = SessionData
+type MediaCleanupArg = SessionData;
 
 const log = new Logger();
 
@@ -262,12 +260,4 @@ export const mediaCleanupHandler = (mediaCleanupArg: MediaCleanupArg) => {
   return;
 };
 
-export const sendMessageToRoomQueue = (roomId: string, msg: any) => {
-  rabbitMQChannel.publish(
-    ROOM_EXCHANGE,
-    getRoomKey(roomId),
-    Buffer.from(JSON.stringify(msg))
-  );
-};
-
-export const mediaResumehandler = async (mediaResumeArg: MediaResumeArg) => {};
+// export const mediaResumehandler = async (mediaResumeArg: MediaResumeArg) => {};

@@ -1,10 +1,8 @@
-import { Job, Queue, QueueScheduler, Worker } from 'bullmq';
-import { worker } from '../../client/mediasoup';
+import { Queue, QueueScheduler, Worker } from 'bullmq';
 import redis from '../../client/redis';
 import serverConfig from '../../config/server';
-import Logger from '../../utils/logger';
-import { sendMessageToMonitorQueue } from '../../utils/queue';
 import { rooms } from '../MyRoomState';
+import { sendMessageToMonitorQueue } from '../rabbitmq';
 
 new QueueScheduler('monitor', {
   connection: redis
@@ -24,7 +22,7 @@ queue.add(
   }
 );
 
-const log = new Logger();
+// const log = new Logger();
 
 const schedulerWorker = new Worker(
   'monitor',
