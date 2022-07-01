@@ -5,7 +5,6 @@ import { onRoomEvents } from './events';
 const getRoomKey = (roomId: string) => `roomIdExchange:${roomId}`;
 
 export const startRoomSubscribers = async (roomId: string) => {
-  rabbitMQChannel.bindExchange;
   await rabbitMQChannel.bindQueue(
     QUEUE_ROOM_EVENTS,
     ROOM_EXCHANGE,

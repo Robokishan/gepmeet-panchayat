@@ -39,9 +39,9 @@ interface MediaUserConsumeArg extends MediaConsumeArg {
   producerIds: string[];
 }
 
-interface MediaResumeArg extends SessionData {}
+type MediaResumeArg = SessionData
 
-interface MediaCleanupArg extends SessionData {}
+type MediaCleanupArg = SessionData
 
 const log = new Logger();
 
@@ -140,7 +140,7 @@ export const onProduceCommand = async (produceArg: ProduceArg) => {
   rooms[roomId].state[userId].producers.push(producer);
 
   // TODO: IDEALLY SHOULD EMIT THAT NEW PRODUCER HAS BEEN ADDED
-  sendMessageToQueue(roomId, {
+  sendMessageToRoomQueue(roomId, {
     msg: 'new User Joined',
     userId: userId,
     roomId: roomId,
@@ -262,7 +262,7 @@ export const mediaCleanupHandler = (mediaCleanupArg: MediaCleanupArg) => {
   return;
 };
 
-export const sendMessageToQueue = (roomId: string, msg: any) => {
+export const sendMessageToRoomQueue = (roomId: string, msg: any) => {
   rabbitMQChannel.publish(
     ROOM_EXCHANGE,
     getRoomKey(roomId),

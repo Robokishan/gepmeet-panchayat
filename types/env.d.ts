@@ -10,5 +10,6 @@ declare namespace NodeJS {
     WEBRTC_MIN_PORT: number;
     WEBRTC_MAX_PORT: number;
     WORKER_ID: string;
+    MONITOR_POLL_INTERVAL: number;
   }
 }

@@ -17,7 +17,8 @@ const serverConfig = {
   WEBRTC_A_IP: process.env.WEBRTC_A_IP,
   WEBRTC_MIN_PORT: process.env.WEBRTC_MIN_PORT,
   WEBRTC_MAX_PORT: process.env.WEBRTC_MAX_PORT,
-  WORKER_ID: process.env.WORKER_ID
+  WORKER_ID: process.env.WORKER_ID,
+  MONITOR_POLL_INTERVAL: Number(process.env.MONITOR_POLL_INTERVAL) || 60000
 };
 
 export default serverConfig;
