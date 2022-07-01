@@ -1,7 +1,7 @@
 import amqp, { Channel, Connection } from 'amqplib';
 import serverConfig from '../../config/server';
 import { startRPCClient, startRPCServer } from '../../helper/rpc';
-import { panchayatHandshakqQueue } from '../../utils/constants';
+import { panchayatHandshakqQueue } from '../../utils/constants/queue';
 import Logger from '../../utils/logger';
 import { createExchanges } from './exchanges';
 import { createQueues } from './queues';

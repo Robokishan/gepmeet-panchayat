@@ -11,12 +11,10 @@ import { MyPeer } from '../../helper/MyPeer';
 import { rooms } from '../../helper/MyRoomState';
 import { rpcClient } from '../../helper/rpc';
 import { MediaSoupCommand } from '../../helper/rpc/handler';
-import { ROOM_EXCHANGE } from '../../utils/constants';
-import Logger from '../../utils/logger';
+import { ROOM_EXCHANGE } from '../../utils/constants/queue';
 import { getRoomKey } from '../../utils/room';
 import { rabbitMQChannel } from '../rabbitmq';
 
-const log = new Logger();
 export const createConsumer = async (
   router: Router,
   producer: Producer,
@@ -28,7 +26,7 @@ export const createConsumer = async (
 ): Promise<Consumer> => {
   if (!router.canConsume({ producerId: producer.id, rtpCapabilities })) {
     throw new Error(
-      `recv-track: client cannot consume ${producer.appData.peerId}`
+      `recv-track: client cannot consume ${producer.appData.peerId} ${roomId}`
     );
   }
 
@@ -60,7 +58,7 @@ export const createConsumer = async (
   };
 };
 
-const closeConsumer = (peerId, roomId) => {
+const _closeConsumer = (peerId, roomId) => {
   if (rooms[roomId]?.state[peerId]) {
     const peer = rooms[roomId].state[peerId];
     closePeer(peer);

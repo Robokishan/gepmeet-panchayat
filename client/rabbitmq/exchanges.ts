@@ -1,11 +1,10 @@
 import { Channel } from 'amqplib';
 import serverConfig from '../../config/server';
-
 import {
   MONITOR_EXCHANGE,
   panchayatMonitorQueue,
   ROOM_EXCHANGE
-} from '../../utils/constants';
+} from '../../utils/constants/queue';
 
 export const createExchanges = async (channel: Channel) => {
   await channel.assertExchange(ROOM_EXCHANGE, 'direct');
