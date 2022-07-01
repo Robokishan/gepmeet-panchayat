@@ -10,11 +10,4 @@ const redisConfig: RedisOptions = {
 };
 
 const redis = new Redis(redisConfig);
-
-// flush redis hack
-// redis.keys('*').then((keys) => {
-//   console.log(keys);
-//   keys.map((key) => redis.del(key));
-// });
-
 export default redis;
