@@ -9,7 +9,7 @@
     "dev:start": "ts-node-dev --respawn src/index.ts",
     "lint": "eslint . --ext .ts",
     "type-check": "tsc --pretty --noEmit",
-    "start": "DEBUG=${DEBUG:='*ERROR*'} node build/index.js",
+    "start": "DEBUG=${DEBUG:='*ERROR* *INFO*'} node build/index.js",
     "build": "tsc --build",
     "serve": "(trap 'kill 0' INT TERM; node -r dotenv/config esbuild.config.js build --watch & nodemon)",
     "clean": "tsc --build --clean"
