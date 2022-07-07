@@ -66,7 +66,8 @@ const schedulerWorker = new Worker(
 );
 
 const createScheduler = async () => {
-  schedulerWorker.run();
+  // casusing issues in prod disabled for now
+  // schedulerWorker.run();
 };
 
 export { createScheduler };
