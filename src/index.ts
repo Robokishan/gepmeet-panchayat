@@ -6,11 +6,9 @@ import serverConfig from './config/server';
 import { addMeInRedis, getMe } from './helper/redis';
 import { createScheduler } from './helper/Scheduler';
 import Logger from './utils/logger';
+const log = new Logger();
 
 async function main() {
-  // Create server
-  const log = new Logger();
-
   // create worker and router for mediasoup server
   await startMediasoup();
   await startRabbitServer();
@@ -24,4 +22,7 @@ async function main() {
   const serverId = await getMe();
   log.info(`Starting panchayat server with ${serverId}`);
 }
-main();
+main().catch((err) => {
+  log.error(err, 'Restarting panchayat server');
+  process.exit(1);
+});
