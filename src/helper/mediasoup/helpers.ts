@@ -134,7 +134,6 @@ export const onProduceCommand = async (produceArg: ProduceArg) => {
   const producer = await rooms[roomId].state[userId].sendTransport.produce(
     produceMeta
   );
-
   rooms[roomId].state[userId].producers.push(producer);
 
   // TODO: IDEALLY SHOULD EMIT THAT NEW PRODUCER HAS BEEN ADDED
@@ -201,14 +200,23 @@ export const mediaConsumehandler = async (mediaCosumeArg: MediaConsumeArg) => {
     sessionData: { roomId, userId },
     rtpCapabilities
   } = mediaCosumeArg;
+
+  // get current state of roomId
   const state = rooms[roomId].state;
+
+  // get transport of userId
   const { recvTransport } = state[userId];
 
+  // list of all consumer parameter here
   const consumers = {};
-  const consumersParameters: Consumer[] = [];
+
   for (const theirPeerId of Object.keys(state)) {
+    // cache all consumer parameters of theirPeer into one array
+    const consumersParameters: Consumer[] = [];
     const peerState = state[theirPeerId];
 
+    // if same user or peerstate not available
+    // or peerstate not having any producer then skip
     if (
       theirPeerId == userId ||
       !peerState ||
@@ -234,6 +242,7 @@ export const mediaConsumehandler = async (mediaCosumeArg: MediaConsumeArg) => {
         log.error(error);
       }
     }
+    // consumers with peerid and consumer parameters
     consumers[theirPeerId] = consumersParameters;
   }
   return { consumerParameters: consumers };
