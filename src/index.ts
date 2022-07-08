@@ -4,7 +4,6 @@ import { startMediasoup } from './client/mediasoup';
 import { startRabbitServer } from './client/rabbitmq/startRabbit';
 import serverConfig from './config/server';
 import { addMeInRedis, getMe } from './helper/redis';
-import { createScheduler } from './helper/Scheduler';
 import Logger from './utils/logger';
 const log = new Logger();
 
@@ -12,7 +11,6 @@ async function main() {
   // create worker and router for mediasoup server
   await startMediasoup();
   await startRabbitServer();
-  await createScheduler();
 
   // add this server in mediasoup server
   await addMeInRedis(

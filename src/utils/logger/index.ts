@@ -29,17 +29,23 @@ class Logger {
     pathNames.unshift(DEBUG_FILENAME_PREFIX);
     const namespace = pathNames.join(':');
 
-    this._debug = debug(`${APP_NAME}:${namespace}`);
-    this._info = debug(`${APP_NAME}:INFO:${namespace}`);
-    this._warn = debug(`${APP_NAME}:WARN:${namespace}`);
-    this._error = debug(`${APP_NAME}:ERROR:${namespace}`);
+    this._debug = this.builddebug(namespace, 'DEBUG');
+    this._info = this.builddebug(namespace, 'INFO');
+    this._warn = this.builddebug(namespace, 'WARN');
+    this._error = this.builddebug(namespace, 'ERROR');
 
     /* eslint-disable no-console */
     this._debug.log = console.info.bind(console);
-    this._info.log = console.info.bind(console);
     this._warn.log = console.warn.bind(console);
+    this._info.log = console.info.bind(console);
     this._error.log = console.error.bind(console);
     /* eslint-enable no-console */
+  }
+
+  builddebug(namespace: string, type: string) {
+    if (type) type = `:${type}:`;
+    else type = ':';
+    return debug(`${APP_NAME}${type}${namespace}`);
   }
 
   get debug() {
