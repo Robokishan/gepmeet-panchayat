@@ -1,7 +1,7 @@
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 import 'dotenv/config';
 import { startMediasoup } from './client/mediasoup';
-import { startRabbitServer } from './client/rabbitmq/startRabbit';
+import { startRabbit } from './client/rabbitmq';
 import serverConfig from './config/server';
 import { addMeInRedis, getMe } from './helper/redis';
 import Logger from './utils/logger';
@@ -10,7 +10,7 @@ const log = new Logger();
 async function main() {
   // create worker and router for mediasoup server
   await startMediasoup();
-  await startRabbitServer();
+  await startRabbit();
 
   // add this server in mediasoup server
   await addMeInRedis(
