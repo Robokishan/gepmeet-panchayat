@@ -1,6 +1,7 @@
 import { ProducerOptions } from 'mediasoup/node/lib/Producer';
 import { RtpCapabilities } from 'mediasoup/node/lib/RtpParameters';
 import { DtlsParameters } from 'mediasoup/node/lib/WebRtcTransport';
+import { closePeer } from '.';
 import { router } from '../../client/mediasoup';
 import {
   Consumer,
@@ -14,6 +15,7 @@ import Logger from '../../utils/logger';
 import { rooms } from '../MyRoomState';
 import { sendMessageToRoomQueue } from '../rabbitmq';
 import { createRoom } from './createRoom';
+import { deleteRoom } from './deleteRoom';
 import { SessionDataType } from './types';
 
 interface SessionData {
@@ -42,6 +44,24 @@ interface MediaUserConsumeArg extends MediaConsumeArg {
 type MediaCleanupArg = SessionData;
 
 const log = new Logger();
+
+export const newUserJoinHandler = async (sessionData: SessionDataType) => {
+  const { roomId, userId } = sessionData;
+  if (!rooms[roomId]) {
+    rooms[roomId] = createRoom();
+  }
+
+  const { state } = rooms[roomId];
+  if (state[userId]) {
+    closePeer(state[userId]);
+  }
+  rooms[roomId].state[userId] = {
+    recvTransport: null,
+    sendTransport: null,
+    consumers: [],
+    producers: []
+  };
+};
 
 export const createProducerTransportHandler = async (
   sessionData: SessionDataType
@@ -265,6 +285,9 @@ export const mediaCleanupHandler = (mediaCleanupArg: MediaCleanupArg) => {
     peer.sendTransport.close();
     peer.sendTransport.close;
     delete rooms[roomId].state[userId];
+  }
+  if (Object.keys(rooms[roomId].state).length === 0) {
+    deleteRoom(roomId, rooms);
   }
   return;
 };

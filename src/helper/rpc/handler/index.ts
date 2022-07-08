@@ -7,6 +7,7 @@ import {
   mediaCleanupHandler,
   mediaConsumehandler,
   mediaUserConsumeHandler,
+  newUserJoinHandler,
   onProduceCommand
 } from '../../mediasoup/helpers';
 import AMQPRPCServer from '../amqp-rpc/AMQPRPCServer';
@@ -28,10 +29,15 @@ export enum MediaSoupCommand {
   resume = 'resume',
   consumeUser = 'consumeUser',
   createConsumerTransport = 'createConsumerTransport',
-  connectConsumerTransport = 'connectConsumerTransport'
+  connectConsumerTransport = 'connectConsumerTransport',
+  joinRoom = 'joinRoom'
 }
 
 export const serverhelpers = (): HelperType[] => [
+  {
+    eventName: MediaSoupCommand.joinRoom,
+    handler: newUserJoinHandler
+  },
   {
     eventName: MediaSoupCommand.getRouterRtpCapabilities,
     handler: getRouterRtpCapabilities
