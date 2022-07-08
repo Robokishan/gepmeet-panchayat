@@ -14,7 +14,7 @@ let rabbitMQChannel: Channel;
 
 const startRabbit = async () => {
   return new Promise((resolve, _reject) => {
-    log.info('Rabbitmq Connection');
+    log.info('Rabbitmq Connecting');
     amqp
       .connect(serverConfig.RABITMQ_URL)
       .then(async (conn) => {
@@ -23,9 +23,11 @@ const startRabbit = async () => {
         });
         conn.on('error', async (err: Error) => {
           log.error('Rabbit connection error: ', err);
-          conn.close();
           conn.removeAllListeners();
-          setTimeout(async () => await startRabbit(), retryInterval);
+          setTimeout(
+            () => startRabbit().then((conn) => resolve(conn)),
+            retryInterval
+          );
         });
         rabbitMQConnection = conn;
         log.info(`Rabbitmq Connection Successfull`);
@@ -38,7 +40,10 @@ const startRabbit = async () => {
       })
       .catch((err) => {
         log.error(err);
-        setTimeout(async () => await startRabbit(), retryInterval);
+        setTimeout(
+          () => startRabbit().then((conn) => resolve(conn)),
+          retryInterval
+        );
       });
   });
 };

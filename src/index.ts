@@ -12,7 +12,6 @@ async function main() {
   // create worker and router for mediasoup server
   await startMediasoup();
   await startRabbit();
-
   // add this server in mediasoup server
   await addMeInRedis(
     { consumerId: '123', producerId: '123', rooms: ['123'], routerId: '123' },
@@ -50,7 +49,7 @@ async function main() {
 setInterval(() => {
   Object.entries(rooms).forEach(([_roomId, room]) => {
     Object.entries(room.state).forEach(([userId, value]) => {
-      log.info(
+      log.debug(
         "User's state : ",
         userId,
         value.producers.map((producer) => producer.id)

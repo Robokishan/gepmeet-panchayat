@@ -4,7 +4,7 @@
   "description": "",
   "main": "build/index.js",
   "scripts": {
-    "dev:debug": "DEBUG=${DEBUG:='*INFO* *WARN* *ERROR*'} ts-node-dev --respawn src/index.ts --deps --debug --clear --rs ",
+    "dev:debug": "DEBUG=${DEBUG:='*INFO* *WARN* *ERROR* *DEBUG*'} ts-node-dev --respawn src/index.ts --deps --debug --clear --rs ",
     "dev": "DEBUG=${DEBUG:='*INFO* *WARN* *ERROR*'} ts-node-dev --respawn src/index.ts --deps --debug --clear --rs ",
     "dev:start": "ts-node-dev --respawn src/index.ts",
     "lint": "eslint . --ext .ts",
