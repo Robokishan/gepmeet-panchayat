@@ -1,7 +1,7 @@
 import debug from 'debug';
 import getCallerFile from './get-caller-file';
 import path from 'path';
-const APP_NAME = 'gepmeet-tanduri';
+const APP_NAME = 'panchayat';
 
 class Logger {
   private _debug;
