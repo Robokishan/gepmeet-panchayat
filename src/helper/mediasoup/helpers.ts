@@ -275,15 +275,7 @@ export const mediaCleanupHandler = (mediaCleanupArg: MediaCleanupArg) => {
 
   if (rooms[roomId]?.state[userId]) {
     const peer = rooms[roomId].state[userId];
-
-    for (const producer of peer.producers) {
-      producer.close();
-    }
-    for (const consumer of peer.consumers) {
-      consumer.close();
-    }
-    peer.sendTransport.close();
-    peer.sendTransport.close;
+    closePeer(peer);
     delete rooms[roomId].state[userId];
   }
   if (Object.keys(rooms[roomId].state).length === 0) {
