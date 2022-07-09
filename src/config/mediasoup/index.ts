@@ -47,13 +47,34 @@ export default {
         }
       ] as RtpCodecCapability[]
     },
-    webRtcTransportOptions: {
-      listenIps: [
+    // mediasoup WebRtcServer options for WebRTC endpoints (mediasoup-client,
+    // libmediasoupclient).
+    // See https://mediasoup.org/documentation/v3/mediasoup/api/#WebRtcServerOptions
+    // NOTE: mediasoup-demo/server/lib/Room.js will increase this port for
+    // each mediasoup Worker since each Worker is a separate process.
+    webRtcServerOptions: {
+      listenInfos: [
         {
+          protocol: 'udp' as const,
           ip: process.env.WEBRTC_LISTEN_IP || '0.0.0.0',
-          announcedIp: process.env.WEBRTC_A_IP
+          announcedIp: process.env.WEBRTC_A_IP,
+          port: 44444
+        },
+        {
+          protocol: 'tcp' as const,
+          ip: process.env.WEBRTC_LISTEN_IP || '0.0.0.0',
+          announcedIp: process.env.WEBRTC_A_IP,
+          port: 44444
         }
-      ] as TransportListenIp[],
+      ]
+    },
+    webRtcTransportOptions: {
+      // listenIps: [
+      //   {
+      //     ip: process.env.WEBRTC_LISTEN_IP || '0.0.0.0',
+      //     announcedIp: process.env.WEBRTC_A_IP
+      //   }
+      // ] as TransportListenIp[],
       initialAvailableOutgoingBitrate: 1000000,
       // minimumAvailableOutgoingBitrate: 600000,
       // maxSctpMessageSize: 262144,
