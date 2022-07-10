@@ -9,6 +9,7 @@ declare namespace NodeJS {
     WEBRTC_A_IP: string;
     WEBRTC_MIN_PORT: number;
     WEBRTC_MAX_PORT: number;
+    WEBRTC_SERVER_PORT: number;
     WORKER_ID: string;
     MONITOR_POLL_INTERVAL: number;
   }
