@@ -1,4 +1,6 @@
 import { Connection } from 'amqplib';
+import { panchayatRPCServerExchange } from '../../client/rabbitmq/constants';
+import serverConfig from '../../config/server';
 import Logger from '../../utils/logger';
 import AMQPRPCClient from './amqp-rpc/AMQPRPCClient';
 import AMQPRPCServer from './amqp-rpc/AMQPRPCServer';
@@ -11,9 +13,14 @@ const startRPCServer = async (
   rabbitMQConnection: Connection,
   queue: string
 ): Promise<void> => {
-  const rpcServer = new AMQPRPCServer(rabbitMQConnection, {
-    requestsQueue: queue
-  });
+  const rpcServer = new AMQPRPCServer(
+    rabbitMQConnection,
+    serverConfig.WORKER_ID,
+    {
+      requestsQueue: queue,
+      exChange: panchayatRPCServerExchange
+    }
+  );
   await rpcServer.start();
   registerRPCServerHandlers(rpcServer);
   log.info('RPC server loaded');

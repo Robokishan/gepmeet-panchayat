@@ -1,6 +1,9 @@
 import { rabbitMQChannel } from '../../client/rabbitmq';
+import {
+  MONITOR_EXCHANGE,
+  ROOM_EXCHANGE
+} from '../../client/rabbitmq/constants';
 import serverConfig from '../../config/server';
-import { MONITOR_EXCHANGE, ROOM_EXCHANGE } from '../../utils/constants/queue';
 import { getRoomKey } from '../../utils/room';
 
 export const sendMessageToMonitorQueue = (msg: unknown) => {

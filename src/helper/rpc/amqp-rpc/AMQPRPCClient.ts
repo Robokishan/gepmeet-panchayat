@@ -102,7 +102,9 @@ class AMQPRPCClient extends AMQPEndpoint {
   async start() {
     await super.start();
     if (this._params.repliesQueue === '') {
-      const response = await this._channel.assertQueue('', { exclusive: true });
+      const response = await this._channel.assertQueue('', {
+        // exclusive: true
+      });
       this._repliesQueue = response.queue;
     }
 

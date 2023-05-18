@@ -61,6 +61,7 @@ export const newUserJoinHandler = async (sessionData: SessionDataType) => {
     consumers: [],
     producers: []
   };
+  return;
 };
 
 export const createProducerTransportHandler = async (
@@ -84,7 +85,6 @@ export const createProducerTransportHandler = async (
   }
 
   const sendTransport = await createTransport('send', router, userId);
-
   rooms[roomId].state[userId] = {
     ...rooms[roomId].state[userId],
     sendTransport

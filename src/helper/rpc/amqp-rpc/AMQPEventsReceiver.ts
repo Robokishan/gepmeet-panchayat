@@ -54,7 +54,7 @@ class AMQPEventsReceiver extends EventEmitter {
     this._channel = await this._connection.createChannel();
     if (this._queueName === '') {
       const queue = await this._channel.assertQueue(this._queueName, {
-        exclusive: true
+        // exclusive: true
       });
       this._queueName = queue.queue;
     }

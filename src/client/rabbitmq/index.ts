@@ -1,12 +1,11 @@
 import amqp, { Channel, Connection } from 'amqplib';
 import serverConfig from '../../config/server';
 import { startRPCClient, startRPCServer } from '../../helper/rpc';
-import { panchayatHandshakqQueue } from '../../utils/constants/queue';
 import Logger from '../../utils/logger';
-import { createExchanges } from './exchanges';
-import { createQueues } from './queues';
+import { panchayatHandshakqQueue } from './constants';
+import { createExchanges, createQueues } from './utils';
 
-const retryInterval = 5000;
+const retryInterval = 500;
 const log = new Logger();
 
 let rabbitMQConnection: Connection;
@@ -38,12 +37,12 @@ const startRabbit = async () => {
         startRPCClient(rabbitMQConnection, panchayatHandshakqQueue);
         resolve(conn);
       })
-      .catch((err) => {
+      .catch(async (err) => {
         log.error(err);
-        setTimeout(
-          () => startRabbit().then((conn) => resolve(conn)),
-          retryInterval
-        );
+        // setTimeout(
+        //   () => startRabbit().then((conn) => resolve(conn)),
+        //   retryInterval
+        // );
       });
   });
 };

@@ -22,7 +22,13 @@ export async function startMediasoup(): Promise<ReturnType> {
   });
   worker.on('died', () => {
     logger.error('mediasoup worker died (this should never happen)');
-    process.exit(1);
+    worker.removeAllListeners('died');
+    worker.removeAllListeners('@success');
+    worker.removeAllListeners('@failure');
+    webRtcServer?.close();
+    setTimeout(async () => {
+      await startMediasoup();
+    }, 3000);
   });
 
   webRtcServer = await worker.createWebRtcServer(

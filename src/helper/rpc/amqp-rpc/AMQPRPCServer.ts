@@ -10,6 +10,7 @@ import AMQPEndpoint from './AMQPEndpoint';
 
 interface ServerParameters {
   requestsQueue: string;
+  exChange: string;
 }
 
 class AMQPRPCServer extends AMQPEndpoint {
@@ -25,12 +26,15 @@ class AMQPRPCServer extends AMQPEndpoint {
   _requestsQueue: any;
   _commands: any;
   _consumerTag: any;
-
-  constructor(connection, params: ServerParameters) {
+  exChange: string;
+  workerId: string;
+  constructor(connection, workerId, params: ServerParameters) {
     params.requestsQueue = params.requestsQueue || '';
 
     super(connection, params);
 
+    this.exChange = params.exChange;
+    this.workerId = workerId;
     this._requestsQueue = params.requestsQueue;
     this._commands = {};
   }
@@ -46,10 +50,22 @@ class AMQPRPCServer extends AMQPEndpoint {
 
     // if (this._requestsQueue === '') {
     const response = await this._channel.assertQueue(this._requestsQueue, {
-      exclusive: true
+      // exclusive: true.
+      autoDelete: true
     });
     this._requestsQueue = response.queue;
     // }
+
+    this._channel.assertExchange(this.exChange, 'direct', {
+      durable: false,
+      autoDelete: true
+    });
+
+    await this._channel.bindQueue(
+      this._requestsQueue,
+      this.exChange,
+      this.workerId
+    );
 
     const consumeResult = await this._channel.consume(
       this._requestsQueue,

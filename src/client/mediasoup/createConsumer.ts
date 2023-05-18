@@ -6,14 +6,7 @@ import {
   RtpParameters,
   Transport
 } from 'mediasoup/node/lib/types';
-import { closePeer } from '../../helper/mediasoup';
 import { MyPeer } from '../../helper/MyPeer';
-import { rooms } from '../../helper/MyRoomState';
-import { rpcClient } from '../../helper/rpc';
-import { MediaSoupCommand } from '../../helper/rpc/handler';
-import { ROOM_EXCHANGE } from '../../utils/constants/queue';
-import { getRoomKey } from '../../utils/room';
-import { rabbitMQChannel } from '../rabbitmq';
 
 export const createConsumer = async (
   router: Router,
@@ -58,28 +51,29 @@ export const createConsumer = async (
   };
 };
 
-const _closeConsumer = (peerId, roomId) => {
-  if (rooms[roomId]?.state[peerId]) {
-    const peer = rooms[roomId].state[peerId];
-    closePeer(peer);
-    rpcClient.sendCommand(MediaSoupCommand.closePeer, [
-      { roomId: roomId, userId: peerId }
-    ]);
-    rabbitMQChannel.publish(
-      ROOM_EXCHANGE,
-      getRoomKey(roomId),
-      Buffer.from(
-        JSON.stringify({
-          msg: MediaSoupCommand.closePeer,
-          sessionData: {
-            roomId,
-            peerId
-          }
-        })
-      )
-    );
-  }
-};
+// write proper rpcclient for receiveing
+// const _closeConsumer = (peerId, roomId) => {
+//   if (rooms[roomId]?.state[peerId]) {
+//     const peer = rooms[roomId].state[peerId];
+//     closePeer(peer);
+//     rpcClient.sendCommand(MediaSoupCommand.closePeer, [
+//       { roomId: roomId, userId: peerId }
+//     ]);
+//     rabbitMQChannel.publish(
+//       ROOM_EXCHANGE,
+//       getRoomKey(roomId),
+//       Buffer.from(
+//         JSON.stringify({
+//           msg: MediaSoupCommand.closePeer,
+//           sessionData: {
+//             roomId,
+//             peerId
+//           }
+//         })
+//       )
+//     );
+//   }
+// };
 
 export interface Consumer {
   producerId: string;
